@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use App\Listeners\LogUserActivity;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\PasswordResetLinkSent;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -25,6 +28,14 @@ class EventServiceProvider extends ServiceProvider
         Logout::class => [
             LogUserActivity::class,
         ],
+        Failed::class => [
+            LogUserActivity::class,
+        ],
+        PasswordReset::class => [
+            LogUserActivity::class,
+        ],
+        PasswordResetLinkSent::class => [
+            LogUserActivity::class],
     ];
 
     /**
