@@ -39,7 +39,7 @@ const handleSubmit = () => {
                     <div class="text-sm text-red-600" v-if="form.errors.name">{{ form.errors.name }}</div>
                 </div>
                 <div class="space-y-2">
-                    <Label for="Product price">Price $</Label>
+                    <Label for="Product price">Price</Label>
                     <Input v-model="form.price" type="number" placeholder="Price" />
                     <div class="text-sm text-red-600" v-if="form.errors.price">{{ form.errors.price }}</div>
                 </div>
@@ -52,7 +52,7 @@ const handleSubmit = () => {
                         {{ form.errors.description }}
                     </div>
                 </div>
-                <Button type="submit">Add a Product</Button>
+                <Button type="submit" :disabled="form.processing">Add a Product</Button>
             </form>
         </div>
     </AppLayout>
