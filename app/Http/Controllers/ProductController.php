@@ -10,7 +10,9 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return Inertia::render('products/Index', []);
+        $products = Product::latest()->get();
+
+        return Inertia::render('products/Index', compact('products'));
     }
 
     public function create()
@@ -29,7 +31,7 @@ class ProductController extends Controller
         Product::create($data);
 
         return redirect()
-        ->route('products.index')
-        ->with('message', 'Product added successfully');
+            ->route('products.index')
+            ->with('message', 'Product added successfully');
     }
 }
