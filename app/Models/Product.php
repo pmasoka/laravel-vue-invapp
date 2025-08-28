@@ -9,5 +9,5 @@ class Product extends Model
     protected $connection = 'pgsql';   // use PostgreSQL
     protected $table = 'products';
 
-    protected $fillable = ['name', 'price', 'description'];
+    protected $fillable = ['name', 'quantity', 'unit_price', 'total_price', 'description'];
 }

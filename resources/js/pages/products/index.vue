@@ -19,7 +19,9 @@ import {
 interface Product {
     id: number,
     name: string,
-    price: number,
+    quantity: number,
+    unit_price: number,
+    total_price: number,
     description: string,
 }
 
@@ -40,7 +42,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage<PageProps>()
 
 const handleDelete = (id: number) => {
-    if(confirm('Do you want to delete a product?')){
+    if (confirm('Do you want to delete a product?')) {
         router.delete(route('products.destroy', (id)));
     }
 };
@@ -79,9 +81,13 @@ const handleDelete = (id: number) => {
                                 ID
                             </TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Price</TableHead>
+                            <TableHead>Catrgory</TableHead>
+                            <TableHead>Supplier Name</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead>Unit Price</TableHead>
+                            <TableHead>Total Price</TableHead>
                             <TableHead>Description</TableHead>
-                            <TableHead class="text-center">
+                            <TableHead class="text-center w-[100px]">
                                 Action
                             </TableHead>
                         </TableRow>
@@ -91,14 +97,20 @@ const handleDelete = (id: number) => {
                         <TableRow v-for="product in props.products" :key="product.id">
                             <TableCell>{{ product.id }}</TableCell>
                             <TableCell class="font-medium">{{ product.name }}</TableCell>
-                            <TableCell>{{ product.price }}</TableCell>
+                            <TableCell class="font-medium">catergory</TableCell>
+                            <TableCell class="font-medium">supplier name</TableCell>
+                            <TableCell class="font-medium">{{ product.quantity }}</TableCell>
+                            <TableCell>{{ product.unit_price }}</TableCell>
+                            <TableCell>{{ product.total_price }}</TableCell>
                             <TableCell>{{ product.description }}</TableCell>
                             <TableCell class="text-center space-x-2">
-                                <Link :href="route('products.edit', { id: product.id })"><Button
-                                    class="bg-slate-600">Edit</Button></Link>
-                                     <Button class="bg-red-600" @click="handleDelete(product.id)">Delete</Button>
+                                <Link :href="route('products.edit', { id: product.id })">
+                                <Button class="bg-slate-600">Edit</Button>
+                                </Link>
+                                <Button class="bg-red-600" @click="handleDelete(product.id)">Delete</Button>
                             </TableCell>
                         </TableRow>
+
                     </TableBody>
                 </Table>
 

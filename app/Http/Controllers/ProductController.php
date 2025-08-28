@@ -24,9 +24,13 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|numeric|min:0',
+            'unit_price' => 'required|numeric|min:0|',
             'description' => 'nullable|string',
         ]);
+
+        // Auto calculate total price
+        $data['total_price'] = $data['quantity'] * $data['unit_price'];
 
         Product::create($data);
 
@@ -42,19 +46,21 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|numeric|min:0',
+            'unit_price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
         ]);
 
-        $product->update([
-            'name' => $request->input('name'),
-            'price' => $request->input('price'),
-            'description' => $request->input('description'),
-        ]);
+        // Auto calculate total price
+        $data['total_price'] = $data['quantity'] * $data['unit_price'];
 
-        return redirect()->route('products.index')->with('message', 'Product updated successfully');
+        $product->update($data);
+
+        return redirect()
+            ->route('products.index')
+            ->with('message', 'Product updated successfully');
     }
 
     public function destroy(Product $product)
