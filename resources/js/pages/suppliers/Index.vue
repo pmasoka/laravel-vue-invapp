@@ -16,29 +16,16 @@ import {
     TableRow,
 } from '@/components/ui/table'
 
-interface Category {
-    id: number,
-    name: string,
-}
-
 interface Supplier {
     id: number,
     name: string,
-}
-
-interface Product {
-    id: number,
-    name: string,
-    quantity: number,
-    unit_price: number,
-    total_price: number,
-    description: string,
-    category: Category;
-    supplier: Supplier; 
+    phone: string,
+    email: string,
+    address: string,
 }
 
 interface Props {
-    products: Product[];
+    suppliers: Supplier[];
 }
 
 // Get props from Inertia
@@ -46,16 +33,16 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Products',
-        href: '/products',
+        title: 'Suppliers',
+        href: '/suppliers',
     },
 ];
 
 const page = usePage<PageProps>()
 
 const handleDelete = (id: number) => {
-    if (confirm('Do you want to delete a product?')) {
-        router.delete(route('products.destroy', (id)));
+    if (confirm('Do you want to delete this supplier?')) {
+        router.delete(route('suppliers.destroy', (id)));
     }
 };
 
@@ -63,7 +50,7 @@ const handleDelete = (id: number) => {
 
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Suppliers" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
@@ -78,51 +65,42 @@ const handleDelete = (id: number) => {
             </div>
             <div>
                 <div>
-
-                </div>
+                    </div>
 
                 <div>
-                    <Link :href="route('products.create')"><Button>Create a Product</Button></Link>
+                    <Link :href="route('suppliers.create')"><Button>Create a Supplier</Button></Link>
                 </div>
 
                 <Table>
-                    <TableCaption>A list of your recent products.</TableCaption>
+                    <TableCaption>A list of your recent suppliers.</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead class="w-[100px]">
                                 ID
                             </TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Supplier Name</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Unit Price</TableHead>
-                            <TableHead>Total Price</TableHead>
-                            <TableHead>Description</TableHead>
+                            <TableHead>Phone</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Address</TableHead>
                             <TableHead class="text-center w-[100px]">
                                 Action
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-
-                        <TableRow v-for="product in props.products" :key="product.id">
-                            <TableCell>{{ product.id }}</TableCell>
-                            <TableCell class="font-medium">{{ product.name }}</TableCell>
-                            <TableCell class="font-medium">{{ product.category.name }}</TableCell>
-                            <TableCell class="font-medium">{{ product.supplier.name }}</TableCell>
-                            <TableCell class="font-medium">{{ product.quantity }}</TableCell>
-                            <TableCell>{{ product.unit_price }}</TableCell>
-                            <TableCell>{{ product.total_price }}</TableCell>
-                            <TableCell>{{ product.description }}</TableCell>
+                        <TableRow v-for="supplier in props.suppliers" :key="supplier.id">
+                            <TableCell>{{ supplier.id }}</TableCell>
+                            <TableCell class="font-medium">{{ supplier.name }}</TableCell>
+                            <TableCell class="font-medium">{{ supplier.phone }}</TableCell>
+                            <TableCell class="font-medium">{{ supplier.email }}</TableCell>
+                            <TableCell class="font-medium">{{ supplier.address }}</TableCell>
                             <TableCell class="text-center space-x-2">
-                                <Link :href="route('products.edit', { id: product.id })">
+                                <Link :href="route('suppliers.edit', { supplier: supplier.id })">
                                 <Button class="bg-slate-600">Edit</Button>
                                 </Link>
-                                <Button class="bg-red-600" @click="handleDelete(product.id)">Delete</Button>
+                                <Button class="bg-red-600" @click="handleDelete(supplier.id)">Delete</Button>
                             </TableCell>
                         </TableRow>
-
                     </TableBody>
                 </Table>
 

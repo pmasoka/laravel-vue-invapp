@@ -19,26 +19,11 @@ import {
 interface Category {
     id: number,
     name: string,
-}
-
-interface Supplier {
-    id: number,
-    name: string,
-}
-
-interface Product {
-    id: number,
-    name: string,
-    quantity: number,
-    unit_price: number,
-    total_price: number,
     description: string,
-    category: Category;
-    supplier: Supplier; 
 }
 
 interface Props {
-    products: Product[];
+    categories: Category[];
 }
 
 // Get props from Inertia
@@ -46,24 +31,23 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Products',
-        href: '/products',
+        title: 'Categories',
+        href: '/categories',
     },
 ];
 
 const page = usePage<PageProps>()
 
 const handleDelete = (id: number) => {
-    if (confirm('Do you want to delete a product?')) {
-        router.delete(route('products.destroy', (id)));
+    if (confirm('Do you want to delete a category?')) {
+        router.delete(route('categories.destroy', (id)));
     }
 };
 
 </script>
 
 <template>
-
-    <Head title="Dashboard" />
+    <Head title="Categories" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="p-4">
@@ -78,26 +62,18 @@ const handleDelete = (id: number) => {
             </div>
             <div>
                 <div>
-
                 </div>
-
                 <div>
-                    <Link :href="route('products.create')"><Button>Create a Product</Button></Link>
+                    <Link :href="route('categories.create')"><Button>Create a Category</Button></Link>
                 </div>
-
                 <Table>
-                    <TableCaption>A list of your recent products.</TableCaption>
+                    <TableCaption>A list of your categories.</TableCaption>
                     <TableHeader>
                         <TableRow>
                             <TableHead class="w-[100px]">
                                 ID
                             </TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Supplier Name</TableHead>
-                            <TableHead>Quantity</TableHead>
-                            <TableHead>Unit Price</TableHead>
-                            <TableHead>Total Price</TableHead>
                             <TableHead>Description</TableHead>
                             <TableHead class="text-center w-[100px]">
                                 Action
@@ -105,27 +81,19 @@ const handleDelete = (id: number) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-
-                        <TableRow v-for="product in props.products" :key="product.id">
-                            <TableCell>{{ product.id }}</TableCell>
-                            <TableCell class="font-medium">{{ product.name }}</TableCell>
-                            <TableCell class="font-medium">{{ product.category.name }}</TableCell>
-                            <TableCell class="font-medium">{{ product.supplier.name }}</TableCell>
-                            <TableCell class="font-medium">{{ product.quantity }}</TableCell>
-                            <TableCell>{{ product.unit_price }}</TableCell>
-                            <TableCell>{{ product.total_price }}</TableCell>
-                            <TableCell>{{ product.description }}</TableCell>
+                        <TableRow v-for="category in props.categories" :key="category.id">
+                            <TableCell>{{ category.id }}</TableCell>
+                            <TableCell class="font-medium">{{ category.name }}</TableCell>
+                            <TableCell>{{ category.description }}</TableCell>
                             <TableCell class="text-center space-x-2">
-                                <Link :href="route('products.edit', { id: product.id })">
-                                <Button class="bg-slate-600">Edit</Button>
+                                <Link :href="route('categories.edit', { id: category.id })">
+                                    <Button class="bg-slate-600">Edit</Button>
                                 </Link>
-                                <Button class="bg-red-600" @click="handleDelete(product.id)">Delete</Button>
+                                <Button class="bg-red-600" @click="handleDelete(category.id)">Delete</Button>
                             </TableCell>
                         </TableRow>
-
                     </TableBody>
                 </Table>
-
             </div>
         </div>
     </AppLayout>
