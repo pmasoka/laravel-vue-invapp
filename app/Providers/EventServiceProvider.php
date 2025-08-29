@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Events\Login;
+use App\Events\ProductActionEvent;
 use App\Listeners\LogUserActivity;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Logout;
+use App\Listeners\LogProductActivity;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
@@ -29,6 +31,10 @@ class EventServiceProvider extends ServiceProvider
         Failed::class => [
             LogUserActivity::class,
         ],
+        ProductActionEvent::class => [
+            LogProductActivity::class,
+        ],
+
     ];
 
     /**

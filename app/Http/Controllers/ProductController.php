@@ -5,15 +5,16 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Supplier; // Import the Supplier model
+use App\Models\Supplier;
 use Illuminate\Http\Request;
+
+use App\Events\ProductActionEvent;
 
 class ProductController extends Controller
 {
 
     public function index()
     {
-        // Eager-load the 'category' and 'supplier' relationships
         $products = Product::with(['category', 'supplier'])->latest()->get();
 
         return Inertia::render('products/Index', compact('products'));
@@ -21,17 +22,12 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::orderBy('name')
-            ->select('id', 'name')
-            ->get();
-        
-        $suppliers = Supplier::orderBy('name') // Fetch suppliers
-            ->select('id', 'name')
-            ->get();
+        $categories = Category::orderBy('name')->select('id', 'name')->get();
+        $suppliers = Supplier::orderBy('name')->select('id', 'name')->get();
 
         return Inertia::render('products/Create', [
             'categories' => $categories,
-            'suppliers' => $suppliers, // Pass suppliers to the view
+            'suppliers'  => $suppliers,
         ]);
     }
 
@@ -43,13 +39,15 @@ class ProductController extends Controller
             'unit_price'  => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id', // Add validation for supplier_id
+            'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
         // Always compute total_price on the server
         $data['total_price'] = (int)$data['quantity'] * (float)$data['unit_price'];
 
-        Product::create($data);
+        $product = Product::create($data);
+
+        event(new ProductActionEvent($product, 'created'));
 
         return redirect()
             ->route('products.index')
@@ -58,16 +56,10 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        // Eager-load the category and supplier relationships for the specific product
         $product->load('category', 'supplier');
 
-        $categories = Category::orderBy('name')
-            ->select('id', 'name')
-            ->get();
-        
-        $suppliers = Supplier::orderBy('name') // Fetch suppliers
-            ->select('id', 'name')
-            ->get();
+        $categories = Category::orderBy('name')->select('id', 'name')->get();
+        $suppliers = Supplier::orderBy('name')->select('id', 'name')->get();
 
         return Inertia::render('products/Edit', [
             'product'    => $product,
@@ -84,13 +76,15 @@ class ProductController extends Controller
             'unit_price'  => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id', // Add validation for supplier_id
+            'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
-        // Auto-calculate total price
         $data['total_price'] = $data['quantity'] * $data['unit_price'];
 
         $product->update($data);
+
+        // Log product update into MongoDB
+        event(new ProductActionEvent($product, 'deleted'));
 
         return redirect()
             ->route('products.index')
@@ -101,6 +95,11 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        return redirect()->route('products.index')->with('message', 'Product deleted successfully');
+        // Log product deletion into MongoDB
+        event(new ProductActionEvent($product, 'updated'));
+
+        return redirect()
+            ->route('products.index')
+            ->with('message', 'Product deleted successfully');
     }
 }
