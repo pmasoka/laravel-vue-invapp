@@ -8,14 +8,19 @@ use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
+use App\Services\DevCacheService;
 use App\Events\ProductActionEvent;
 
 class ProductController extends Controller
 {
 
+    public function __construct(protected DevCacheService $cache) {}
+
     public function index()
     {
-        $products = Product::with(['category', 'supplier'])->latest()->get();
+        $products = $this->cache->remember('products_list', 60, function () {
+            return Product::with(['category', 'supplier'])->latest()->get();
+        });
 
         return Inertia::render('products/Index', compact('products'));
     }
