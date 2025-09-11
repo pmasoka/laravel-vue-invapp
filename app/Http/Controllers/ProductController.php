@@ -7,13 +7,11 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-
 use App\Services\DevCacheService;
 use App\Events\ProductActionEvent;
 
 class ProductController extends Controller
 {
-
     public function __construct(protected DevCacheService $cache) {}
 
     public function index()
@@ -47,11 +45,14 @@ class ProductController extends Controller
             'supplier_id' => 'required|exists:suppliers,id',
         ]);
 
-        // Always compute total_price on the server
         $data['total_price'] = (int)$data['quantity'] * (float)$data['unit_price'];
 
         $product = Product::create($data);
 
+        // clear stale cache
+        $this->cache->forget('products_list');
+
+        // fire event
         event(new ProductActionEvent($product, 'created'));
 
         return redirect()
@@ -88,8 +89,11 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        // Log product update into MongoDB
-        event(new ProductActionEvent($product, 'deleted'));
+        // clear stale cache
+        $this->cache->forget('products_list');
+
+        // fire event
+        event(new ProductActionEvent($product, 'updated'));
 
         return redirect()
             ->route('products.index')
@@ -100,8 +104,11 @@ class ProductController extends Controller
     {
         $product->delete();
 
-        // Log product deletion into MongoDB
-        event(new ProductActionEvent($product, 'updated'));
+        // clear stale cache
+        $this->cache->forget('products_list');
+
+        // fire event
+        event(new ProductActionEvent($product, 'deleted'));
 
         return redirect()
             ->route('products.index')
