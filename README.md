@@ -1,3 +1,5 @@
+How to run Redis on Ubuntu
+
 Step 1: Open Ubuntu (WSL)
 
 Press Start → search for Ubuntu and open it.
